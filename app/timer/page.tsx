@@ -329,8 +329,8 @@ export default function TimerPage() {
                     }`}
                   >
                     <span
-                      className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
-                        enableAlarm ? "translate-x-6" : "translate-x-1"
+                      className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
+                        enableAlarm ? "translate-x-5" : "translate-x-0"
                       }`}
                     />
                   </button>
