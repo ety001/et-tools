@@ -59,7 +59,7 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="absolute bottom-0 right-0 p-4 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="absolute top-1/2 right-0 -translate-y-1/2 p-4 opacity-0 transition-opacity group-hover:opacity-100">
                 <svg
                   className="h-6 w-6 text-gray-400"
                   fill="none"
