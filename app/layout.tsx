@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "小工具集",
-  description: "实用的移动端小工具集合",
+  title: "ET的小工具",
+  description: "实用的日常小工具集合",
 };
 
 export default function RootLayout({

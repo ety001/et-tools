@@ -30,10 +30,10 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8 sm:py-12">
         <div className="mb-8 text-center sm:mb-12">
           <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
-            小工具集
+            ET的小工具
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            实用的移动端工具集合
+            实用的日常小工具集合
           </p>
         </div>
 
