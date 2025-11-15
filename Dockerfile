@@ -23,15 +23,24 @@ RUN pnpm install
 # ====================
 FROM base AS builder
 
+# 接受代理构建参数
+ARG HTTPS_PROXY
+ARG HTTP_PROXY
+
 # 从依赖阶段复制 node_modules
 COPY --from=deps /app/node_modules ./node_modules
 
 # 复制源代码
 COPY . .
 
-# 设置构建时的环境变量
+# 设置构建时的环境变量（包括代理）
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# 设置代理环境变量（如果提供了构建参数）
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV https_proxy=${HTTPS_PROXY}
+ENV http_proxy=${HTTP_PROXY}
 
 # 构建 Next.js 应用
 RUN pnpm build
