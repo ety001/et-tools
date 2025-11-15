@@ -43,6 +43,7 @@ export default function WhiteboardPage() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLineWidthPicker, setShowLineWidthPicker] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // 视图变换状态
   const [scale, setScale] = useState(1);
@@ -229,6 +230,31 @@ export default function WhiteboardPage() {
     ctx.restore();
   }, [drawings, offsetX, offsetY, scale]);
 
+  // PC端滚轮缩放
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+      setScale((prevScale) => {
+        const newScale = Math.max(0.1, Math.min(5, prevScale * zoomFactor));
+
+        // 以鼠标位置为中心缩放
+        const scaleChange = newScale / prevScale;
+        setOffsetX((prev) => mouseX - (mouseX - prev) * scaleChange);
+        setOffsetY((prev) => mouseY - (mouseY - prev) * scaleChange);
+        return newScale;
+      });
+    },
+    []
+  );
+
   // 初始化画布
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -245,10 +271,26 @@ export default function WhiteboardPage() {
     return () => window.removeEventListener("resize", resizeCanvas);
   }, [redraw]);
 
+  // 注册 wheel 事件监听器（非 passive，以便可以 preventDefault）
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      canvas.removeEventListener("wheel", handleWheel);
+    };
+  }, [handleWheel]);
+
   // 当绘图数据变化时重绘
   useEffect(() => {
     redraw();
   }, [redraw]);
+
+  // 客户端挂载标记，避免 SSR hydration 不匹配
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // PC端鼠标事件处理
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -320,28 +362,8 @@ export default function WhiteboardPage() {
     mouseDragStateRef.current.isDragging = false;
   };
 
-  // PC端滚轮缩放
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.max(0.1, Math.min(5, scale * zoomFactor));
-
-    // 以鼠标位置为中心缩放
-    const scaleChange = newScale / scale;
-    setOffsetX((prev) => mouseX - (mouseX - prev) * scaleChange);
-    setOffsetY((prev) => mouseY - (mouseY - prev) * scaleChange);
-    setScale(newScale);
-  };
-
   // 移动端触摸事件处理
-  const getTouchDistance = (touch1: Touch, touch2: Touch) => {
+  const getTouchDistance = (touch1: React.Touch, touch2: React.Touch) => {
     const dx = touch1.clientX - touch2.clientX;
     const dy = touch1.clientY - touch2.clientY;
     return Math.sqrt(dx * dx + dy * dy);
@@ -590,15 +612,17 @@ export default function WhiteboardPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
       {/* 返回按钮 */}
-      <Link
-        href="/"
-        className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-gray-700 shadow-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-      >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        返回首页
-      </Link>
+      {mounted && (
+        <Link
+          href="/"
+          className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-gray-700 shadow-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          返回首页
+        </Link>
+      )}
 
       {/* Canvas 容器 */}
       <div ref={containerRef} className="absolute inset-0">
@@ -613,7 +637,6 @@ export default function WhiteboardPage() {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
