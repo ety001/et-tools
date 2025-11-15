@@ -22,6 +22,13 @@ const tools = [
     emoji: "⏰",
     color: "bg-orange-500",
   },
+  {
+    name: "万年历",
+    description: "公历农历转换，黄历查询",
+    path: "/calendar",
+    emoji: "📅",
+    color: "bg-purple-500",
+  },
 ];
 
 export default function Home() {
