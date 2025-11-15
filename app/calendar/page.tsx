@@ -307,14 +307,14 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 py-4 sm:px-4 sm:py-8">
         {/* 返回按钮 */}
         <Link
           href="/"
-          className="mb-6 inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="mb-4 inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors sm:mb-6 sm:text-base"
         >
           <svg
-            className="h-5 w-5"
+            className="h-4 w-4 sm:h-5 sm:w-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -331,28 +331,28 @@ export default function CalendarPage() {
 
         {/* 主内容 */}
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-6 text-center text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
+          <h1 className="mb-4 text-center text-2xl font-bold text-gray-900 dark:text-white sm:mb-6 sm:text-3xl md:text-4xl">
             万年历
           </h1>
 
           {/* 日历头部 */}
-          <div className="mb-6 flex items-center justify-between rounded-2xl bg-white p-4 shadow-lg dark:bg-gray-800">
-            <div className="flex items-center gap-4">
+          <div className="mb-4 flex flex-col gap-3 rounded-2xl bg-white p-3 shadow-lg dark:bg-gray-800 sm:mb-6 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+            <div className="flex flex-1 items-center justify-between gap-2 sm:gap-4">
               {/* 年份选择 */}
-              <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center gap-1 sm:gap-2">
                 <button
                   onClick={() => setCurrentYear(currentYear - 1)}
-                  className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 sm:p-2"
                   disabled={currentYear <= 1900}
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <select
                   value={currentYear}
                   onChange={(e) => setCurrentYear(Number.parseInt(e.target.value, 10))}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="flex-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:px-3 sm:py-2 sm:text-base"
                 >
                   {Array.from({ length: 301 }, (_, i) => 1900 + i).map((year) => (
                     <option key={year} value={year}>
@@ -362,29 +362,29 @@ export default function CalendarPage() {
                 </select>
                 <button
                   onClick={() => setCurrentYear(currentYear + 1)}
-                  className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 sm:p-2"
                   disabled={currentYear >= 2200}
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
 
               {/* 月份选择 */}
-              <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center gap-1 sm:gap-2">
                 <button
                   onClick={handlePrevMonth}
-                  className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 sm:p-2"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <select
                   value={currentMonth}
                   onChange={(e) => setCurrentMonth(Number.parseInt(e.target.value, 10))}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="flex-1 rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:px-3 sm:py-2 sm:text-base"
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
                     <option key={month} value={month}>
@@ -394,9 +394,9 @@ export default function CalendarPage() {
                 </select>
                 <button
                   onClick={handleNextMonth}
-                  className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="rounded-lg p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 sm:p-2"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -406,20 +406,20 @@ export default function CalendarPage() {
             {/* 今天按钮 */}
             <button
               onClick={handleToday}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+              className="w-full rounded-lg bg-blue-500 px-3 py-2 text-sm text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 sm:w-auto sm:px-4 sm:text-base"
             >
               今天
             </button>
           </div>
 
           {/* 日历网格 */}
-          <div className="mb-6 rounded-2xl bg-white p-4 shadow-lg dark:bg-gray-800">
+          <div className="mb-4 rounded-2xl bg-white p-2 shadow-lg dark:bg-gray-800 sm:mb-6 sm:p-4">
             {/* 星期标题 */}
-            <div className="mb-2 grid grid-cols-7 gap-2">
+            <div className="mb-1 grid grid-cols-7 gap-1 sm:mb-2 sm:gap-2">
               {WEEKDAYS.map((day, index) => (
                 <div
                   key={day}
-                  className={`text-center text-sm font-semibold ${
+                  className={`text-center text-xs font-semibold sm:text-sm ${
                     index >= 5 ? "text-red-500" : "text-gray-700 dark:text-gray-300"
                   }`}
                 >
@@ -429,7 +429,7 @@ export default function CalendarPage() {
             </div>
 
             {/* 日期网格 */}
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {calendarDays.map((day, index) => {
                 const isWeekendDay = isWeekend(day.date);
                 const isSelectedDay = isSelected(day.date);
@@ -439,7 +439,7 @@ export default function CalendarPage() {
                   <button
                     key={index}
                     onClick={() => setSelectedDate(day.date)}
-                    className={`relative rounded-lg p-2 text-left transition-all hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                    className={`relative rounded-lg p-1 text-left transition-all active:bg-gray-100 dark:active:bg-gray-700 sm:p-2 sm:hover:bg-gray-100 sm:dark:hover:bg-gray-700 ${
                       !day.isCurrentMonth
                         ? "text-gray-400 dark:text-gray-600"
                         : isWeekendDay
@@ -451,20 +451,20 @@ export default function CalendarPage() {
                         : ""
                     }`}
                   >
-                    <div className="text-lg font-semibold">{day.date.getDate()}</div>
-                    <div className="text-xs">{day.lunar}</div>
+                    <div className="text-sm font-semibold leading-tight sm:text-lg">{day.date.getDate()}</div>
+                    <div className="text-[10px] leading-tight sm:text-xs">{day.lunar}</div>
                     {day.festival && (
-                      <div className="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                      <div className="mt-0.5 truncate text-[9px] text-blue-600 dark:text-blue-400 sm:mt-1 sm:text-xs">
                         {day.festival}
                       </div>
                     )}
                     {day.solarTerm && (
-                      <div className="mt-1 text-xs text-green-600 dark:text-green-400">
+                      <div className="mt-0.5 truncate text-[9px] text-green-600 dark:text-green-400 sm:mt-1 sm:text-xs">
                         {day.solarTerm}
                       </div>
                     )}
                     {isTodayDay && !isSelectedDay && (
-                      <div className="absolute right-1 top-1 h-2 w-2 rounded-full bg-blue-500" />
+                      <div className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-blue-500 sm:right-1 sm:top-1 sm:h-2 sm:w-2" />
                     )}
                   </button>
                 );
@@ -473,16 +473,16 @@ export default function CalendarPage() {
           </div>
 
           {/* 详细信息 */}
-          <div className="rounded-2xl bg-gray-100 p-6 dark:bg-gray-800">
-            <div className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="rounded-2xl bg-gray-100 p-4 dark:bg-gray-800 sm:p-6">
+            <div className="mb-3 text-base font-semibold text-gray-900 dark:text-white sm:mb-4 sm:text-lg">
               {selectedInfo.lunarStr}
             </div>
-            <div className="mb-4 text-gray-700 dark:text-gray-300">
+            <div className="mb-3 text-sm text-gray-700 dark:text-gray-300 sm:mb-4 sm:text-base">
               {selectedInfo.ganZhi}年{selectedInfo.zodiac}
             </div>
 
             {/* 宜 */}
-            <div className="mb-2 flex flex-wrap gap-2">
+            <div className="mb-2 flex flex-wrap gap-1.5 text-sm sm:gap-2 sm:text-base">
               <span className="text-red-600 dark:text-red-400">■</span>
               <span className="text-gray-700 dark:text-gray-300">宜：</span>
               {selectedInfo.goodThings.map((thing, index) => (
@@ -494,7 +494,7 @@ export default function CalendarPage() {
             </div>
 
             {/* 忌 */}
-            <div className="mb-4 flex flex-wrap gap-2">
+            <div className="mb-3 flex flex-wrap gap-1.5 text-sm sm:mb-4 sm:gap-2 sm:text-base">
               <span className="text-gray-900 dark:text-gray-100">■</span>
               <span className="text-gray-700 dark:text-gray-300">忌：</span>
               {selectedInfo.badThings.map((thing, index) => (
@@ -506,8 +506,8 @@ export default function CalendarPage() {
             </div>
 
             {/* 距离目标日期 */}
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
+              <svg className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>距离 2026年元旦 还有{getDaysUntilNewYear()}天</span>
