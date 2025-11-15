@@ -29,6 +29,13 @@ const tools = [
     emoji: "📅",
     color: "bg-purple-500",
   },
+  {
+    name: "白板",
+    description: "无限画布，自由绘制",
+    path: "/whiteboard",
+    emoji: "🖊️",
+    color: "bg-pink-500",
+  },
 ];
 
 export default function Home() {
