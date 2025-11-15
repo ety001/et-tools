@@ -18,6 +18,59 @@ const ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉
 // 生肖
 const ZODIAC = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
 
+// 农历月份名称
+const LUNAR_MONTHS = ["", "正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "冬", "腊"];
+
+// 将数字月份转换为中文月份名称（用于节日查找）
+const formatLunarMonthForFestival = (month: number): string => {
+  if (month >= 1 && month <= 12) {
+    return LUNAR_MONTHS[month] + "月";
+  }
+  return `${month}月`;
+};
+
+// 将数字日期转换为中文日期（用于节日查找和显示）
+const formatLunarDayForFestival = (day: number): string => {
+  if (day === 1) return "初一";
+  if (day === 2) return "初二";
+  if (day === 3) return "初三";
+  if (day === 4) return "初四";
+  if (day === 5) return "初五";
+  if (day === 6) return "初六";
+  if (day === 7) return "初七";
+  if (day === 8) return "初八";
+  if (day === 9) return "初九";
+  if (day === 10) return "初十";
+  if (day === 11) return "十一";
+  if (day === 12) return "十二";
+  if (day === 13) return "十三";
+  if (day === 14) return "十四";
+  if (day === 15) return "十五";
+  if (day === 16) return "十六";
+  if (day === 17) return "十七";
+  if (day === 18) return "十八";
+  if (day === 19) return "十九";
+  if (day === 20) return "二十";
+  if (day === 21) return "廿一";
+  if (day === 22) return "廿二";
+  if (day === 23) return "廿三";
+  if (day === 24) return "廿四";
+  if (day === 25) return "廿五";
+  if (day === 26) return "廿六";
+  if (day === 27) return "廿七";
+  if (day === 28) return "廿八";
+  if (day === 29) return "廿九";
+  if (day === 30) return "三十";
+  return `${day}`;
+};
+
+// 将数字月份和日期转换为中文格式（用于UI显示）
+const formatLunarDateForDisplay = (month: number, day: number): string => {
+  const monthStr = formatLunarMonthForFestival(month);
+  const dayStr = formatLunarDayForFestival(day);
+  return `${monthStr}${dayStr}`;
+};
+
 // 传统节日映射
 const TRADITIONAL_FESTIVALS: Record<string, string> = {
   "正月初一": "春节",
@@ -97,7 +150,7 @@ export default function CalendarPage() {
       const lsr = lunisolar(date);
       const lunarMonth = lsr.lunar.month;
       const lunarDay = lsr.lunar.day;
-      const lunarStr = `${lunarMonth}月${lunarDay}`;
+      const lunarStr = formatLunarDateForDisplay(lunarMonth, lunarDay);
       
       days.push({
         date,
@@ -112,13 +165,13 @@ export default function CalendarPage() {
       const lsr = lunisolar(date);
       const lunarMonth = lsr.lunar.month;
       const lunarDay = lsr.lunar.day;
-      const lunarStr = `${lunarMonth}月${lunarDay}`;
+      const lunarStr = formatLunarDateForDisplay(lunarMonth, lunarDay);
       
       // 检查节气
       const solarTerm = lsr.solarTerm?.name;
       
-      // 检查传统节日
-      const lunarKey = `${lunarMonth}月${lunarDay}`;
+      // 检查传统节日（需要转换为中文格式）
+      const lunarKey = formatLunarMonthForFestival(lunarMonth) + formatLunarDayForFestival(lunarDay);
       const traditionalFestival = TRADITIONAL_FESTIVALS[lunarKey];
       
       // 检查公历节日
@@ -143,7 +196,7 @@ export default function CalendarPage() {
       const lsr = lunisolar(date);
       const lunarMonth = lsr.lunar.month;
       const lunarDay = lsr.lunar.day;
-      const lunarStr = `${lunarMonth}月${lunarDay}`;
+      const lunarStr = formatLunarDateForDisplay(lunarMonth, lunarDay);
       
       days.push({
         date,
@@ -189,7 +242,7 @@ export default function CalendarPage() {
     }
     
     return {
-      lunarStr: `${lunarMonth}月${lunarDay}`,
+      lunarStr: formatLunarDateForDisplay(lunarMonth, lunarDay),
       ganZhi,
       zodiac,
       goodThings,
