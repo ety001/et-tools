@@ -111,10 +111,25 @@ const SOLAR_FESTIVALS: Record<string, string> = {
 };
 
 export default function CalendarPage() {
-  const today = new Date();
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth() + 1);
-  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  // 使用惰性初始化避免 SSR 水合不匹配
+  const [currentYear, setCurrentYear] = useState(() => {
+    if (typeof window !== "undefined") {
+      return new Date().getFullYear();
+    }
+    return 2025; // 默认值，仅在 SSR 时使用
+  });
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    if (typeof window !== "undefined") {
+      return new Date().getMonth() + 1;
+    }
+    return 11; // 默认值，仅在 SSR 时使用
+  });
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (typeof window !== "undefined") {
+      return new Date();
+    }
+    return new Date(2025, 10, 15); // 默认值，仅在 SSR 时使用
+  });
   const [calendarDays, setCalendarDays] = useState<Array<{
     date: Date;
     isCurrentMonth: boolean;
@@ -122,6 +137,16 @@ export default function CalendarPage() {
     festival?: string;
     solarTerm?: string;
   }>>([]);
+  const [mounted, setMounted] = useState(false);
+
+  // 客户端挂载后同步当前日期，避免 SSR 水合不匹配
+  useEffect(() => {
+    const now = new Date();
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth() + 1);
+    setSelectedDate(now);
+    setMounted(true);
+  }, []);
 
   // 生成日历数据
   useEffect(() => {
@@ -279,16 +304,18 @@ export default function CalendarPage() {
   };
 
   const handleToday = () => {
-    setCurrentYear(today.getFullYear());
-    setCurrentMonth(today.getMonth() + 1);
-    setSelectedDate(today);
+    const now = new Date();
+    setCurrentYear(now.getFullYear());
+    setCurrentMonth(now.getMonth() + 1);
+    setSelectedDate(now);
   };
 
   const isToday = (date: Date) => {
+    const now = new Date();
     return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
+      date.getFullYear() === now.getFullYear() &&
+      date.getMonth() === now.getMonth() &&
+      date.getDate() === now.getDate()
     );
   };
 
@@ -312,6 +339,7 @@ export default function CalendarPage() {
         <Link
           href="/"
           className="mb-4 inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors sm:mb-6 sm:text-base"
+          suppressHydrationWarning
         >
           <svg
             className="h-4 w-4 sm:h-5 sm:w-5"
@@ -474,10 +502,16 @@ export default function CalendarPage() {
 
           {/* 详细信息 */}
           <div className="rounded-2xl bg-gray-100 p-4 dark:bg-gray-800 sm:p-6">
-            <div className="mb-3 text-base font-semibold text-gray-900 dark:text-white sm:mb-4 sm:text-lg">
+            <div 
+              className="mb-3 text-base font-semibold text-gray-900 dark:text-white sm:mb-4 sm:text-lg"
+              suppressHydrationWarning
+            >
               {selectedInfo.lunarStr}
             </div>
-            <div className="mb-3 text-sm text-gray-700 dark:text-gray-300 sm:mb-4 sm:text-base">
+            <div 
+              className="mb-3 text-sm text-gray-700 dark:text-gray-300 sm:mb-4 sm:text-base"
+              suppressHydrationWarning
+            >
               {selectedInfo.ganZhi}年{selectedInfo.zodiac}
             </div>
 
@@ -485,24 +519,32 @@ export default function CalendarPage() {
             <div className="mb-2 flex flex-wrap gap-1.5 text-sm sm:gap-2 sm:text-base">
               <span className="text-red-600 dark:text-red-400">■</span>
               <span className="text-gray-700 dark:text-gray-300">宜：</span>
-              {selectedInfo.goodThings.map((thing, index) => (
-                <span key={index} className="text-gray-700 dark:text-gray-300">
-                  {thing}
-                  {index < selectedInfo.goodThings.length - 1 && "·"}
-                </span>
-              ))}
+              {mounted ? (
+                selectedInfo.goodThings.map((thing, index) => (
+                  <span key={index} className="text-gray-700 dark:text-gray-300">
+                    {thing}
+                    {index < selectedInfo.goodThings.length - 1 && "·"}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-700 dark:text-gray-300">加载中...</span>
+              )}
             </div>
 
             {/* 忌 */}
             <div className="mb-3 flex flex-wrap gap-1.5 text-sm sm:mb-4 sm:gap-2 sm:text-base">
               <span className="text-gray-900 dark:text-gray-100">■</span>
               <span className="text-gray-700 dark:text-gray-300">忌：</span>
-              {selectedInfo.badThings.map((thing, index) => (
-                <span key={index} className="text-gray-700 dark:text-gray-300">
-                  {thing}
-                  {index < selectedInfo.badThings.length - 1 && "·"}
-                </span>
-              ))}
+              {mounted ? (
+                selectedInfo.badThings.map((thing, index) => (
+                  <span key={index} className="text-gray-700 dark:text-gray-300">
+                    {thing}
+                    {index < selectedInfo.badThings.length - 1 && "·"}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-700 dark:text-gray-300">加载中...</span>
+              )}
             </div>
 
             {/* 距离目标日期 */}
@@ -510,7 +552,7 @@ export default function CalendarPage() {
               <svg className="h-3.5 w-3.5 flex-shrink-0 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>距离 2026年元旦 还有{getDaysUntilNewYear()}天</span>
+              <span suppressHydrationWarning>距离 2026年元旦 还有{getDaysUntilNewYear()}天</span>
             </div>
           </div>
         </div>
