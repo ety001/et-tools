@@ -9,11 +9,15 @@ import {
   faSquare,
   faCircle,
   faPalette,
-  faSliders,
+  faPenNib,
   faDownload,
+  faHand,
+  faTrash,
+  faRotateLeft,
+  faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-type Tool = "pen" | "eraser" | "rectangle" | "ellipse";
+type Tool = "pen" | "eraser" | "rectangle" | "ellipse" | "hand";
 type DrawingAction = {
   type: Tool;
   points: Array<{ x: number; y: number }>;
@@ -52,6 +56,7 @@ export default function WhiteboardPage() {
 
   // 绘图数据
   const [drawings, setDrawings] = useState<DrawingAction[]>([]);
+  const [redoStack, setRedoStack] = useState<DrawingAction[]>([]);
   const currentDrawingRef = useRef<DrawingAction | null>(null);
   const startPosRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -355,6 +360,7 @@ export default function WhiteboardPage() {
       // 确保 drawing 有效且至少有一个点
       if (drawing && drawing.points && drawing.points.length > 0) {
         setDrawings((prev) => [...prev, drawing]);
+        setRedoStack([]); // 新的操作清空重做栈
       }
       currentDrawingRef.current = null;
       setIsDrawing(false);
@@ -446,6 +452,7 @@ export default function WhiteboardPage() {
       const touch = touches[0];
       if (isDrawing && currentDrawingRef.current) {
         // 绘图
+        e.preventDefault();
         const canvasPos = screenToCanvas(touch.clientX, touch.clientY);
         currentDrawingRef.current.points.push(canvasPos);
         if (currentDrawingRef.current.type === "rectangle" || currentDrawingRef.current.type === "ellipse") {
@@ -471,6 +478,7 @@ export default function WhiteboardPage() {
       // 确保 drawing 有效且至少有一个点
       if (drawing && drawing.points && drawing.points.length > 0) {
         setDrawings((prev) => [...prev, drawing]);
+        setRedoStack([]); // 新的操作清空重做栈
       }
       currentDrawingRef.current = null;
       setIsDrawing(false);
@@ -608,8 +616,34 @@ export default function WhiteboardPage() {
     });
   };
 
+  // 撤销
+  const handleUndo = () => {
+    setDrawings((prev) => {
+      if (prev.length === 0) return prev;
+      const newDrawings = [...prev];
+      const lastDrawing = newDrawings.pop();
+      if (lastDrawing) {
+        setRedoStack((prevRedo) => [...prevRedo, lastDrawing]);
+      }
+      return newDrawings;
+    });
+  };
+
+  // 重做
+  const handleRedo = () => {
+    setRedoStack((prev) => {
+      if (prev.length === 0) return prev;
+      const newRedoStack = [...prev];
+      const drawingToRestore = newRedoStack.pop();
+      if (drawingToRestore) {
+        setDrawings((prevDrawings) => [...prevDrawings, drawingToRestore]);
+      }
+      return newRedoStack;
+    });
+  };
+
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
+    <div className="relative h-screen w-screen overflow-hidden overscroll-none bg-gray-100 dark:bg-gray-900">
       {/* 返回按钮 */}
       {mounted && (
         <Link
@@ -627,7 +661,7 @@ export default function WhiteboardPage() {
       <div ref={containerRef} className="absolute inset-0">
         <canvas
           ref={canvasRef}
-          className={`absolute inset-0 ${tool === "pen" || tool === "eraser" || tool === "rectangle" || tool === "ellipse"
+          className={`absolute inset-0 touch-none ${tool === "pen" || tool === "eraser" || tool === "rectangle" || tool === "ellipse"
             ? "cursor-crosshair"
             : "cursor-grab"
             }`}
@@ -642,7 +676,45 @@ export default function WhiteboardPage() {
       </div>
 
       {/* 底部工具栏 */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-center gap-2 bg-white p-4 shadow-2xl dark:bg-gray-800 sm:gap-4">
+      <div className="fixed bottom-0 left-0 right-0 z-30 flex flex-wrap items-center justify-center gap-2 bg-white p-4 shadow-2xl dark:bg-gray-800 sm:gap-4">
+        {/* 拖动 */}
+        <button
+          onClick={() => setTool("hand")}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${tool === "hand"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          title="拖动"
+        >
+          <FontAwesomeIcon icon={faHand} className="h-6 w-6" />
+        </button>
+
+        {/* 撤销 */}
+        <button
+          onClick={handleUndo}
+          disabled={drawings.length === 0}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${drawings.length === 0
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          title="撤销"
+        >
+          <FontAwesomeIcon icon={faRotateLeft} className="h-6 w-6" />
+        </button>
+
+        {/* 重做 */}
+        <button
+          onClick={handleRedo}
+          disabled={redoStack.length === 0}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${redoStack.length === 0
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
+          title="重做"
+        >
+          <FontAwesomeIcon icon={faRotateRight} className="h-6 w-6" />
+        </button>
+
         {/* 画笔 */}
         <button
           onClick={() => setTool("pen")}
@@ -734,7 +806,7 @@ export default function WhiteboardPage() {
             className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200 text-gray-700 transition-colors hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
             title="笔触粗细"
           >
-            <FontAwesomeIcon icon={faSliders} className="h-6 w-6" />
+            <FontAwesomeIcon icon={faPenNib} className="h-6 w-6" />
           </button>
           {showLineWidthPicker && (
             <div className="absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-lg bg-white p-4 shadow-xl dark:bg-gray-800">
@@ -760,6 +832,19 @@ export default function WhiteboardPage() {
           title="下载"
         >
           <FontAwesomeIcon icon={faDownload} className="h-6 w-6" />
+        </button>
+
+        {/* 清空 */}
+        <button
+          onClick={() => {
+            if (confirm("确定要清空画布吗？")) {
+              setDrawings([]);
+            }
+          }}
+          className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+          title="清空"
+        >
+          <FontAwesomeIcon icon={faTrash} className="h-6 w-6" />
         </button>
       </div>
 
