@@ -558,7 +558,7 @@ export default function WhiteboardPage() {
         }
         tempCtx.stroke();
       } else if (drawing.type === "eraser") {
-        tempCtx.globalCompositeOperation = "destination-out";
+        tempCtx.strokeStyle = "#FFFFFF";
         if (drawing.points.length < 2) return;
         tempCtx.beginPath();
         const firstPoint = drawing.points[0];
@@ -568,7 +568,6 @@ export default function WhiteboardPage() {
           tempCtx.lineTo(point.x - minX + padding, point.y - minY + padding);
         }
         tempCtx.stroke();
-        tempCtx.globalCompositeOperation = "source-over";
       } else if (drawing.type === "rectangle" && drawing.startX !== undefined && drawing.startY !== undefined) {
         const startX = drawing.startX - minX + padding;
         const startY = drawing.startY - minY + padding;
@@ -628,11 +627,10 @@ export default function WhiteboardPage() {
       <div ref={containerRef} className="absolute inset-0">
         <canvas
           ref={canvasRef}
-          className={`absolute inset-0 ${
-            tool === "pen" || tool === "eraser" || tool === "rectangle" || tool === "ellipse"
-              ? "cursor-crosshair"
-              : "cursor-grab"
-          }`}
+          className={`absolute inset-0 ${tool === "pen" || tool === "eraser" || tool === "rectangle" || tool === "ellipse"
+            ? "cursor-crosshair"
+            : "cursor-grab"
+            }`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -648,11 +646,10 @@ export default function WhiteboardPage() {
         {/* 画笔 */}
         <button
           onClick={() => setTool("pen")}
-          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
-            tool === "pen"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          }`}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${tool === "pen"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
           title="画笔"
         >
           <FontAwesomeIcon icon={faPen} className="h-6 w-6" />
@@ -661,11 +658,10 @@ export default function WhiteboardPage() {
         {/* 橡皮 */}
         <button
           onClick={() => setTool("eraser")}
-          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
-            tool === "eraser"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          }`}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${tool === "eraser"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
           title="橡皮"
         >
           <FontAwesomeIcon icon={faEraser} className="h-6 w-6" />
@@ -674,11 +670,10 @@ export default function WhiteboardPage() {
         {/* 矩形 */}
         <button
           onClick={() => setTool("rectangle")}
-          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
-            tool === "rectangle"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          }`}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${tool === "rectangle"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
           title="矩形"
         >
           <FontAwesomeIcon icon={faSquare} className="h-6 w-6" />
@@ -687,11 +682,10 @@ export default function WhiteboardPage() {
         {/* 椭圆 */}
         <button
           onClick={() => setTool("ellipse")}
-          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
-            tool === "ellipse"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-          }`}
+          className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${tool === "ellipse"
+            ? "bg-blue-500 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            }`}
           title="椭圆"
         >
           <FontAwesomeIcon icon={faCircle} className="h-6 w-6" />
@@ -710,7 +704,7 @@ export default function WhiteboardPage() {
             <FontAwesomeIcon icon={faPalette} className="h-6 w-6" style={{ color: color }} />
           </button>
           {showColorPicker && (
-            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800">
+            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-lg bg-white p-3 shadow-xl w-max dark:bg-gray-800">
               <div className="grid grid-cols-4 gap-2">
                 {COLORS.map((c) => (
                   <button
@@ -719,9 +713,8 @@ export default function WhiteboardPage() {
                       setColor(c);
                       setShowColorPicker(false);
                     }}
-                    className={`h-10 w-10 rounded-lg border-2 transition-all ${
-                      color === c ? "border-blue-500 scale-110" : "border-gray-300 dark:border-gray-600"
-                    }`}
+                    className={`h-10 w-10 rounded-lg border-2 transition-all ${color === c ? "border-blue-500 scale-110" : "border-gray-300 dark:border-gray-600"
+                      }`}
                     style={{ backgroundColor: c }}
                     title={c}
                   />
