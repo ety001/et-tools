@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+
+## 技术栈要求
+
+本项目使用以下技术栈，所有开发工作必须遵循这些技术选型：
+
+- **运行时**: Node.js
+- **包管理器**: pnpm
+- **前端框架**: Next.js
+- **编程语言**: TypeScript
+- **样式框架**: Tailwind CSS
