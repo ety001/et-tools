@@ -36,6 +36,13 @@ const tools = [
     emoji: "🖊️",
     color: "bg-pink-500",
   },
+  {
+    name: "IP计算器",
+    description: "IPv4子网计算，IPv6压缩展开",
+    path: "/ip-calc",
+    emoji: "🌐",
+    color: "bg-cyan-500",
+  },
 ];
 
 export default function Home() {
